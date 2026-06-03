@@ -1,1190 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Beginner's Linux Codex</title>
-    <style>
-        :root {
-            /* Light/Beige Mode Palette */
-            --bg-primary: #fdfbf7;
-            --bg-secondary: #f4efe2;
-            --sidebar-bg: #0f172a;
-            --sidebar-text: #f4efe2;
-            --sidebar-active: #ebdcb9;
-            --text-primary: #0f172a;
-            --text-secondary: #334155;
-            --accent: #1e3a8a;
-            --accent-light: #3b82f6;
-            --border-color: #e2e8f0;
-            --card-bg: #ffffff;
-            --code-bg: #1e293b;
-            --code-text: #f8fafc;
-            --prompt-color: #10b981;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-        }
+  <meta charset="UTF-8">
+  <!-- This viewport tag is absolutely crucial for mobile styling to work! -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>distrocheck // System Evaluation</title>
+  <style>
+    /* --- Base Variables & Core Reset --- */
+    :root {
+      --bg-color: #0b0f19;
+      --sidebar-bg: #0f1423;
+      --terminal-bg: #131a30;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-orange: #f97316;
+      --sidebar-width: 280px;
+    }
 
-        [data-theme="dark"] {
-            /* Dark/Navy Mode Palette */
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --sidebar-bg: #020617;
-            --sidebar-text: #94a3b8;
-            --sidebar-active: #fdfbf7;
-            --text-primary: #fdfbf7;
-            --text-secondary: #94a3b8;
-            --accent: #3b82f6;
-            --accent-light: #60a5fa;
-            --border-color: #334155;
-            --card-bg: #1e293b;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-        }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            display: flex;
-            min-height: 100vh;
-            line-height: 1.6;
-        }
+    /* --- Hamburger Menu Button (Desktop Hidden) --- */
+    .menu-toggle {
+      display: none;
+    }
 
-        /* Fixed Sidebar Layout */
-        nav {
-            width: 280px;
-            background-color: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            padding: 2rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            z-index: 100;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-        }
+    /* --- Sidebar Layout --- */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--sidebar-bg);
+      border-right: 1px solid #1e293b;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 16px;
+      flex-shrink: 0;
+    }
 
-        .logo-area h2 {
-            color: #ffffff;
-            font-size: 1.5rem;
-            letter-spacing: -0.5px;
-            border-bottom: 2px solid var(--accent);
-            padding-bottom: 0.5rem;
-        }
+    .brand-section {
+      margin-bottom: 32px;
+      padding-left: 8px;
+    }
 
-        .logo-area p {
-            font-size: 0.8rem;
-            color: #94a3b8;
-            margin-top: 0.25rem;
-        }
+    .brand-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
 
-        .nav-links {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            flex-grow: 1;
-        }
+    .brand-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
 
-        .nav-links li a {
-            color: var(--sidebar-text);
-            text-decoration: none;
-            padding: 0.75rem 1rem;
-            display: block;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-        }
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-        .nav-links li a:hover, .nav-links li.active a {
-            background-color: rgba(255, 255, 255, 0.08);
-            color: var(--sidebar-active);
-        }
+    .nav-item a {
+      display: block;
+      padding: 12px 16px;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
 
-        .nav-links li.active a {
-            border-left: 4px solid var(--sidebar-active);
-            font-weight: bold;
-        }
+    .nav-item a:hover {
+      background-color: #1e293b;
+      color: var(--text-main);
+    }
 
-        .theme-control {
-            padding-top: 1rem;
-            border-top: 1px solid #334155;
-        }
+    /* Active State matching image_d7093e.png */
+    .nav-item.active a {
+      background-color: #1e293b;
+      color: #ffe4b5; /* Warm highlight color */
+      border-left: 3px solid var(--accent-blue);
+      font-weight: 600;
+    }
 
-        .theme-btn {
-            width: 100%;
-            padding: 0.75rem;
-            border: none;
-            background-color: var(--accent);
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
+    /* --- Main Content Layout --- */
+    .main-content {
+      flex-grow: 1;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: calc(100% - var(--sidebar-width));
+    }
 
-        .theme-btn:hover {
-            opacity: 0.9;
-        }
+    /* --- Terminal Interface (From image_d788df.png) --- */
+    .terminal-window {
+      width: 100%;
+      max-width: 650px;
+      background-color: var(--terminal-bg);
+      border-radius: 8px;
+      border: 1px solid #1e293b;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
 
-        /* Main Content Frame */
-        main {
-            margin-left: 280px;
-            flex-grow: 1;
-            padding: 3rem 4rem;
-            max-width: 1200px;
-        }
+    .terminal-header {
+      background-color: #0f1423;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      border-bottom: 1px solid #1e293b;
+    }
 
-        .page-section {
-            display: none;
-        }
+    .terminal-buttons {
+      display: flex;
+      gap: 8px;
+    }
 
-        .page-section.active {
-            display: block;
-            animation: fadeIn 0.4s ease-in-out;
-        }
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .dot-red { background-color: #ef4444; }
+    .dot-yellow { background-color: #eab308; }
+    .dot-green { background-color: #22c55e; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    .terminal-title {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      left: 0;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
 
-        /* Typography & Components */
-        h1 {
-            font-size: 2.5rem;
-            color: var(--accent);
-            margin-bottom: 1rem;
-            font-weight: 800;
-        }
+    .terminal-body {
+      padding: 24px;
+      font-family: 'Courier New', Courier, monospace;
+    }
 
-        h2 {
-            font-size: 1.75rem;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            border-left: 5px solid var(--accent);
-            padding-left: 0.75rem;
-            color: var(--text-primary);
-        }
+    .app-title {
+      font-size: 1.4rem;
+      color: var(--accent-blue);
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
 
-        h3 {
-            font-size: 1.25rem;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
-        }
+    .terminal-prompt {
+      color: var(--accent-green);
+      margin-bottom: 24px;
+    }
+    .terminal-prompt span {
+      color: var(--text-main);
+    }
 
-        p {
-            margin-bottom: 1.25rem;
-            color: var(--text-secondary);
-            font-size: 1.05rem;
-        }
+    .quiz-question {
+      font-size: 1rem;
+      color: var(--text-main);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
 
-        .infobox {
-            background-color: var(--bg-secondary);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid var(--accent-light);
-        }
+    .options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-        .infobox p:last-child {
-            margin-bottom: 0;
-        }
+    .option-btn {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      color: var(--text-muted);
+      padding: 14px 16px;
+      text-align: left;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
 
-        /* Grid Frameworks */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin: 1.5rem 0;
-        }
+    .option-btn:hover {
+      background-color: #334155;
+      color: var(--text-main);
+      border-color: var(--accent-blue);
+    }
 
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-        }
+    /* --- Responsive Mobile Queries --- */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
 
-        /* Custom Tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-            box-shadow: var(--shadow);
-            border-radius: 8px;
-            overflow: hidden;
-        }
+      /* Enable Hamburger Button */
+      .menu-toggle {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        width: 28px;
+        height: 20px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        z-index: 1000;
+      }
 
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
+      .menu-toggle span {
+        display: block;
+        height: 3px;
+        width: 100%;
+        background-color: var(--text-main);
+        border-radius: 2px;
+        transition: all 0.3s ease;
+      }
 
-        th {
-            background-color: var(--accent);
-            color: white;
-            font-weight: 600;
-        }
+      /* Turn Sidebar into a Slide-out Drawer Container */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: -280px; /* Hidden offscreen by default */
+        height: 100vh;
+        z-index: 999;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 10px 0 25px rgba(0, 0, 0, 0.6);
+      }
 
-        tr:nth-child(even) {
-            background-color: var(--bg-secondary);
-        }
+      /* When JS appends the 'active' class, slide it into frame */
+      .sidebar.active {
+        left: 0;
+      }
 
-        /* Interactive Simulator Styles */
-        .terminal-container {
-            background-color: var(--code-bg);
-            border-radius: 8px;
-            box-shadow: 0 20px 4px rgba(0,0,0,0.15);
-            overflow: hidden;
-            margin: 2rem 0;
-        }
+      /* Main Content adjustments so it flows cleanly on small screens */
+      .main-content {
+        width: 100%;
+        padding: 80px 16px 40px 16px; /* Extra top padding stops overlap with menu icon */
+      }
 
-        .terminal-header {
-            background-color: #0f172a;
-            padding: 0.75rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border-bottom: 1px solid #1e293b;
-        }
-
-        .terminal-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-        .dot-red { background-color: #ef4444; }
-        .dot-yellow { background-color: #eab308; }
-        .dot-green { background-color: #22c55e; }
-
-        .terminal-title {
-            color: #94a3b8;
-            font-size: 0.85rem;
-            font-family: monospace;
-            margin-left: auto;
-        }
-
-        .terminal-body {
-            padding: 1.5rem;
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 0.95rem;
-            color: #f8fafc;
-            min-height: 320px;
-            max-height: 450px;
-            overflow-y: auto;
-        }
-
-        .terminal-output {
-            white-space: pre-wrap;
-            margin-bottom: 0.5rem;
-        }
-
-        .terminal-line {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .terminal-prompt {
-            color: var(--prompt-color);
-            font-weight: bold;
-        }
-
-        .terminal-input {
-            background: none;
-            border: none;
-            color: #f8fafc;
-            font-family: inherit;
-            font-size: inherit;
-            outline: none;
-            flex-grow: 1;
-        }
-
-        /* Search Tool Styles */
-        .search-box {
-            width: 100%;
-            padding: 1rem;
-            font-size: 1.1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            background-color: var(--card-bg);
-            color: var(--text-primary);
-            margin-bottom: 1.5rem;
-            outline: none;
-        }
-
-        .search-box:focus {
-            border-color: var(--accent);
-        }
-
-        /* Code Block Copy Layouts */
-        .code-snippet-container {
-            position: relative;
-            margin: 1rem 0;
-        }
-
-        pre {
-            background-color: var(--code-bg);
-            color: var(--code-text);
-            padding: 1.25rem;
-            border-radius: 8px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.95rem;
-            overflow-x: auto;
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background-color: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #e2e8f0;
-            padding: 0.4rem 0.75rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .copy-btn:hover {
-            background-color: rgba(255,255,255,0.2);
-        }
-
-        /* Roadmap Visualization */
-        .roadmap {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            position: relative;
-            margin: 2rem 0;
-            padding-left: 2rem;
-            border-left: 3px solid var(--border-color);
-        }
-
-        .roadmap-step {
-            position: relative;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.25rem;
-            box-shadow: var(--shadow);
-        }
-
-        .roadmap-step::before {
-            content: '';
-            position: absolute;
-            left: calc(-2rem - 7px);
-            top: 1.5rem;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: var(--accent);
-            border: 3px solid var(--bg-primary);
-        }
-
-        .roadmap-step.completed::before {
-            background-color: var(--prompt-color);
-        }
-
-        /* Interactive Quiz Engine System */
-        .quiz-card {
-            background-color: var(--card-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-            box-shadow: var(--shadow);
-        }
-
-        .quiz-question {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-        }
-
-        .quiz-options {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .quiz-opt-btn {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 1rem;
-            border-radius: 6px;
-            text-align: left;
-            font-size: 1rem;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .quiz-opt-btn:hover {
-            background-color: var(--border-color);
-        }
-
-        .quiz-opt-btn.correct {
-            background-color: #d1fae5;
-            border-color: #10b981;
-            color: #065f46;
-            font-weight: bold;
-        }
-
-        .quiz-opt-btn.wrong {
-            background-color: #fee2e2;
-            border-color: #ef4444;
-            color: #991b1b;
-        }
-
-        .explanation-box {
-            margin-top: 1rem;
-            padding: 1rem;
-            background-color: var(--bg-secondary);
-            border-radius: 6px;
-            border-left: 4px solid var(--accent);
-            display: none;
-        }
-
-        .quiz-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1.5rem;
-        }
-
-        .action-btn {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .action-btn:disabled {
-            background-color: var(--border-color);
-            cursor: not-allowed;
-            color: var(--text-secondary);
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 8px;
-            background-color: var(--border-color);
-            border-radius: 4px;
-            margin-bottom: 2rem;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background-color: var(--accent);
-            transition: width 0.3s ease;
-        }
-    </style>
+      /* Hamburger Transformation to an 'X' close graphic when open */
+      .menu-toggle.open span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+      }
+      .menu-toggle.open span:nth-child(2) {
+        opacity: 0;
+      }
+      .menu-toggle.open span:nth-child(3) {
+        transform: translateY(-4px) rotate(-45deg);
+      }
+    }
+  </style>
 </head>
-<body data-theme="light">
+<body>
 
-    <!-- Fixed Sidebar Navigation Panel -->
+  <!-- Mobile Hamburger Activation Icon -->
+  <button class="menu-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation Menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- Navigation Sidebar (Reconstructed from image_d7093e.png) -->
+  <aside class="sidebar" id="navigationSidebar">
+    <div class="brand-section">
+      <h1 class="brand-title">Linux Codex</h1>
+      <p class="brand-subtitle">From Absolute Zero to Sysadmin</p>
+    </div>
     <nav>
-        <div class="logo-area">
-            <h2>Linux Codex</h2>
-            <p>From Absolute Zero to Sysadmin</p>
-        </div>
-        <ul class="nav-links">
-            <li class="active"><a onclick="switchPage('overview')">1. Core Overview</a></li>
-            <li><a onclick="switchPage('distros')">2. Distribution Matrix</a></li>
-            <li><a onclick="switchPage('filesystem')">3. Directory Hierarchy</a></li>
-            <li><a onclick="switchPage('commands')">4. Command Sandbox</a></li>
-            <li><a onclick="switchPage('security')">5. Package & Security</a></li>
-            <li><a onclick="switchPage('arch-guide')">6. Arch Installation</a></li>
-            <li><a onclick="switchPage('roadmap-page')">7. Learning Roadmap</a></li>
-            <li><a onclick="switchPage('quiz-page')">8. Knowledge Evaluation</a></li>
-        </ul>
-        <div class="theme-control">
-            <button class="theme-btn" onclick="toggleTheme()">Toggle Canvas Theme</button>
-        </div>
+      <ul class="nav-list">
+        <li class="nav-item active"><a href="#">1. Core Overview</a></li>
+        <li class="nav-item"><a href="#">2. Distribution Matrix</a></li>
+        <li class="nav-item"><a href="#">3. Directory Hierarchy</a></li>
+        <li class="nav-item"><a href="#">4. Command Sandbox</a></li>
+        <li class="nav-item"><a href="#">5. Package & Security</a></li>
+        <li class="nav-item"><a href="#">6. Arch Installation</a></li>
+        <li class="nav-item"><a href="#">7. Learning Roadmap</a></li>
+        <li class="nav-item"><a href="#">8. Knowledge Evaluation</a></li>
+      </ul>
     </nav>
+  </aside>
 
-    <!-- Main Dynamic Workspace Display -->
-    <main>
+  <!-- Interactive Sandbox Display Frame -->
+  <main class="main-content" id="contentArea">
 
-        <!-- PAGE 1: CORE OVERVIEW -->
-        <section id="overview" class="page-section active">
-            <h1>Introduction to the Linux Architecture</h1>
-            <p>Welcome to Linux. Unlike consumer systems that mask structural computing events beneath locked interfaces, Linux gives you full control over system resources. It is open-source, structurally clear, and handles the core operations of the global cloud architecture, microcontrollers, and modern production deployments.</p>
-            
-            <div class="infobox">
-                <h3>What are you doing here?</h3>
-                <p>As a beginner, moving to Linux requires shifting your mental paradigm from clicking pre-packaged graphic layers to passing text instructions down to a kernel handler. You are learning to talk to your computer directly.</p>
-            </div>
+    <!-- Virtual Terminal Wrapper (Reconstructed from image_d788df.png) -->
+    <section class="terminal-window">
+      <div class="terminal-header">
+        <div class="terminal-buttons">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+        </div>
+        <div class="terminal-title">bash - distrocheck</div>
+      </div>
 
-            <h2>What Exactly is an Operating System Kernel?</h2>
-            <p>The <strong>Kernel</strong> is the core engine of the operating system. It sits directly between your system hardware (CPU, RAM, Hard Drives) and the software applications you execute. When a program needs to allocate memory or draw an interface, it makes a structured system call to the kernel, which manages physical resource assignments safely.</p>
-            
-            <h2>The Terminal Environment</h2>
-            <p>The graphical user interface (GUI) is just one way to send instructions to the system. The <strong>Command Line Interface (CLI)</strong>, or terminal, strips away graphical wrappers and lets you communicate via a shell interpreter (like <code>bash</code> or <code>zsh</code>). This environment gives you faster text manipulation speed, remote administration capabilities, and deep system optimization options.</p>
-        </section>
+      <div class="terminal-body">
+        <div class="app-title">distrocheck v1.0.0</div>
+        <div class="terminal-prompt">arteo@system:~ $ <span>./run_evaluation.sh</span></div>
 
-        <!-- PAGE 2: DISTRIBUTION MATRIX -->
-        <section id="distros" class="page-section">
-            <h1>The Linux Distribution Matrix</h1>
-            <p>Because Linux is open-source, anyone can combine the core Linux Kernel with custom package managers, system tools, and visual desktop interfaces. These custom distributions are called <strong>Distributions</strong> (or "Distros").</p>
+        <div class="quiz-question">1. What is your preferred package management styling?</div>
 
-            <h2>The Easiest Starting Points</h2>
-            <div class="grid-2">
-                <div class="card">
-                    <h3>Linux Mint (Recommended First Step)</h3>
-                    <p>Linux Mint is designed to eliminate installation friction. It features a traditional desktop workflow out of the box, includes automatic media codecs, handles proprietary graphics hardware drivers seamlessly, and relies on the rock-solid Ubuntu software ecosystem repository core.</p>
-                </div>
-                <div class="card">
-                    <h3>Ubuntu Workstation</h3>
-                    <p>The most globally recognized distro. Ubuntu features massive hardware compatibility and community support documentation pools. If you encounter an administrative issue as a beginner, chances are high that someone has already solved it on the Ubuntu forums.</p>
-                </div>
-            </div>
+        <div class="options-container">
+          <button class="option-btn">&gt; DIY / Building everything from scratch</button>
+          <button class="option-btn">&gt; Bleeding edge updates, keep it minimal</button>
+          <button class="option-btn">&gt; Rock solid stability, things should just work</button>
+        </div>
+      </div>
+    </section>
 
-            <h2>The Hard Parts of Linux</h2>
-            <p>The "hard" part of running advanced Linux ecosystems is the loss of automated installation tools. Advanced distros require you to manually partition drives, configure kernel modules, build device driver configurations, write configuration files from memory, and resolve software source conflicts without a GUI wizard wrapper.</p>
+  </main>
 
-            <h2>The Hardest Distributions</h2>
-            <p>Distributions like <strong>Arch Linux</strong>, <strong>Gentoo</strong>, and <strong>Linux From Scratch (LFS)</strong> strip away configuration scripts entirely. You start with an empty shell prompt. You must compile packages manually, configure configuration files line-by-line, and map your own system architectures. This hands-on configuration makes them difficult for beginners, but teaches you exactly how operating systems work under the hood.</p>
+  <!-- Simple JavaScript to toggle the responsive layout drawers safely -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const navigationSidebar = document.getElementById('navigationSidebar');
+      const contentArea = document.getElementById('contentArea');
 
-            <h2>Distro Ecosystem Structural Matrix</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Distribution Name</th>
-                        <th>Target Audience</th>
-                        <th>Package Manager</th>
-                        <th>Default Desktop Feel</th>
-                        <th>Installation Style</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Linux Mint</strong></td>
-                        <td>Absolute Beginners</td>
-                        <td><code>apt</code></td>
-                        <td>Traditional (Cinnamon)</td>
-                        <td>Graphic Click Wizard</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Ubuntu</strong></td>
-                        <td>Beginners / Developers</td>
-                        <td><code>apt</code> / snap</td>
-                        <td>Modern Dock (GNOME)</td>
-                        <td>Graphic Click Wizard</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Fedora Workstation</strong></td>
-                        <td>Intermediate / Sysadmins</td>
-                        <td><code>dnf</code></td>
-                        <td>Cutting Edge GNOME</td>
-                        <td>Semi-Automated GUI</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Arch Linux</strong></td>
-                        <td>Advanced Hobbyists</td>
-                        <td><code>pacman</code></td>
-                        <td>None (Blank TTY Terminal)</td>
-                        <td>Manual Command Line Setup</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+      // Click event for opening and closing the sidebar drawer
+      mobileMenuBtn.addEventListener('click', (event) => {
+        event.stopPropagation(); // Avoid instantly triggering contentArea close rules
+        navigationSidebar.classList.toggle('active');
+        mobileMenuBtn.classList.toggle('open');
+      });
 
-        <!-- PAGE 3: DIRECTORY HIERARCHY -->
-        <section id="filesystem" class="page-section">
-            <h1>The Linux Filesystem Hierarchy Standard (FHS)</h1>
-            <p>Windows maps storage devices across hardware logical drives (like <code>C:</code> or <code>D:</code>). Linux groups all storage components, processes, and connected devices inside a single, unified folder framework starting at the <strong>Root Directory (<code>/</code>)</strong>.</p>
-            
-            <div class="infobox">
-                <h3>Everything is a File</h3>
-                <p>In Linux, configuration items, your RAM data tracking channels, and internal hard drives are treated as simple files inside this directory architecture.</p>
-            </div>
-
-            <h2>Core Directory Map</h2>
-            <div class="grid-2">
-                <div class="card">
-                    <h3><code>/</code> — Root</h3>
-                    <p>The absolute foundation of the system. Every single path, folder, and mounted storage disk on your system branches out from here.</p>
-                </div>
-                <div class="card">
-                    <h3><code>/home</code> — User Workspace</h3>
-                    <p>Where personal files live. Your desktop folders, downloads, documents, and unique configuration profiles are isolated here.</p>
-                </div>
-                <div class="card">
-                    <h3><code>/etc</code> — System Configurations</h3>
-                    <p>The central nerve center for settings. Contains text files that control system services, network maps, passwords, and startup parameters.</p>
-                </div>
-                <div class="card">
-                    <h3><code>/var</code> — Variable Assets</h3>
-                    <p>Holds dynamic files that change size frequently during normal operation, such as system logs (<code>/var/log</code>) and database caches.</p>
-                </div>
-                <div class="card">
-                    <h3><code>/usr</code> — User Binaries</h3>
-                    <p>Contains your installed user applications, core library systems, documentation pools, and program assets.</p>
-                </div>
-                <div class="card">
-                    <h3><code>/bin</code> -> <code>/usr/bin</code> — Commands</h3>
-                    <p>Where the executable utility binaries live. Commands like <code>ls</code>, <code>cd</code>, and <code>mkdir</code> are actual programs located inside this directory.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- PAGE 4: COMMAND SANDBOX -->
-        <section id="commands" class="page-section">
-            <h1>Core Utilities & Live Sandbox</h1>
-            <p>To navigate and manipulate a headless Linux environment safely, you need to learn core command line tools. Use the search tool below to find a utility, or test them out in the interactive terminal simulator at the bottom of the page.</p>
-
-            <h2>Command Reference Locator</h2>
-            <input type="text" id="cmdSearch" class="search-box" placeholder="Type what action you want to perform... (e.g. 'delete', 'list', 'folder')" oninput="filterCommands()">
-            
-            <div id="commandContainer">
-                <!-- Javascript will insert structured cards here -->
-            </div>
-
-            <h2>Live Interactive Terminal Sandbox</h2>
-            <p>Practice typing basic core commands safely inside this browser terminal environment. Try typing <code>help</code>, <code>neofetch</code>, <code>ls</code>, or <code>pwd</code> to get started.</p>
-            
-            <div class="terminal-container">
-                <div class="terminal-header">
-                    <div class="terminal-dot dot-red"></div>
-                    <div class="terminal-dot dot-yellow"></div>
-                    <div class="terminal-dot dot-green"></div>
-                    <div class="terminal-title">guest@linux-codex:~</div>
-                </div>
-                <div class="terminal-body" id="termBody" onclick="focusTerminalInput()">
-                    <div class="terminal-output">Welcome to the Linux Codex Interactive Shell.
-Type 'help' to view available operations.</div>
-                    <div class="terminal-line">
-                        <span class="terminal-prompt">guest@codex:~ $</span>
-                        <input type="text" id="termInput" class="terminal-input" autofocus onkeydown="handleTerminalCommand(event)">
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- PAGE 5: PACKAGE & SECURITY -->
-        <section id="security" class="page-section">
-            <h1>Package Ecosystems & Access Control</h1>
-            <p>Linux manages software distribution through automated software source pipelines called repositories, rather than manual executable download links. It also uses strict file access controls to protect configuration files from unauthorized access.</p>
-
-            <h2>Understanding Package Managers</h2>
-            <p>A package manager works like an app store for the command line. It contacts secure servers, evaluates software dependencies, downloads the packages, and installs them to your system files.</p>
-            
-            <div class="code-snippet-container">
-                <button class="copy-btn" onclick="copySnippet(this)">Copy</button>
-                <pre><code># Install software on Ubuntu/Mint system
-sudo apt update && sudo apt install git
-
-# Install software on Arch Linux system
-sudo pacman -Syu git</code></pre>
-            </div>
-
-            <h2>The Linux Security Model: Core Root Elevation</h2>
-            <p>Normal users run in unprivileged workspaces so they can't accidentally damage system files. To change system settings or install software, you prepend commands with <strong><code>sudo</code></strong> (SuperUser Do). This tells the system to execute the instruction with temporary administrator access.</p>
-
-            <h2>File Permission Matrix</h2>
-            <p>Every file tracking record holds permissions mapped for three user levels: <strong>User (Owner)</strong>, <strong>Group</strong>, and <strong>Others</strong>. Each level can have three access types:</p>
-            <ul>
-                <li><strong>Read (r):</strong> Permission to look at file contents or list folder files.</li>
-                <li><strong>Write (w):</strong> Permission to modify file data or add/remove folder files.</li>
-                <li><strong>Execute (x):</strong> Permission to run a file as a program or change into a folder directory path.</li>
-            </ul>
-
-            <div class="infobox">
-                <h3>The <code>chmod</code> Utility</h3>
-                <p>To change permissions, you use numeric values: Read=4, Write=2, Execute=1. For example, <code>sudo chmod 755 script.sh</code> sets full control for the owner, and read/execute access for everyone else.</p>
-            </div>
-        </section>
-
-        <!-- PAGE 6: ARCH INSTALLATION -->
-        <section id="arch-guide" class="page-section">
-            <h1>Advanced Walkthrough: Installing Arch Linux</h1>
-            <p>This guide explains the step-by-step terminal instructions required to install Arch Linux from a raw terminal prompt. It details exactly what each system call is doing behind the scenes.</p>
-
-            <div class="roadmap">
-                <div class="roadmap-step">
-                    <h3>Step 1: Set Your Keyboard Mapping & Verify Boot State</h3>
-                    <p>Load your preferred layout map and ensure the motherboards UEFI firmware systems are talking to the live medium securely:</p>
-                    <div class="code-snippet-container">
-                        <button class="copy-btn" onclick="copySnippet(this)">Copy</button>
-                        <pre><code>loadkeys us
-ls /sys/firmware/efi/efivars</code></pre>
-                    </div>
-                    <span style="font-size:0.85rem; color:var(--text-secondary);">*Explainer: Verifying this directory ensures the machine booted under modern UEFI configurations rather than legacy BIOS setups.*</span>
-                </div>
-
-                <div class="roadmap-step">
-                    <h3>Step 2: Validate Connectivity & Synchronize Network Clock</h3>
-                    <p>Ping target remote network address metrics to test communication paths and update your system clock accuracy:</p>
-                    <div class="code-snippet-container">
-                        <button class="copy-btn" onclick="copySnippet(this)">Copy</button>
-                        <pre><code>ping -c 3 archlinux.org
-timedatectl set-ntp true</code></pre>
-                    </div>
-                    <span style="font-size:0.85rem; color:var(--text-secondary);">*Explainer: Network clock validation prevents system encryption issues during security key checking steps later on.*</span>
-                </div>
-
-                <div class="roadmap-step">
-                    <h3>Step 3: Disk Partitioning and Formatting</h3>
-                    <p>Open the system storage layout editor, split your drive spaces, and write clean system structural blocks to the new partitions:</p>
-                    <div class="code-snippet-container">
-                        <button class="copy-btn" onclick="copySnippet(this)">Copy</button>
-                        <pre><code># Open the disk layout mapping tool
-fdisk /dev/sda
-
-# Format the system boot layout partition
-mkfs.vfat -F 32 /dev/sda1
-
-# Format the main file storage space partition
-mkfs.ext4 /dev/sda2</code></pre>
-                    </div>
-                    <span style="font-size:0.85rem; color:var(--text-secondary);">*Explainer: drive spaces are mapped manually here, setting up an EFI system partition and a main linux system partition.*</span>
-                </div>
-
-                <div class="roadmap-step">
-                    <h3>Step 4: Mount Storage Spaces and Bootstrap the Core System</h3>
-                    <p>Mount your newly formatted partitions to make them accessible, then install the base system software packages directly onto the drive:</p>
-                    <div class="code-snippet-container">
-                        <button class="copy-btn" onclick="copySnippet(this)">Copy</button>
-                        <pre><code>mount /dev/sda2 /mnt
-mkdir -p /mnt/boot
-mount /dev/sda1 /mnt/boot
-
-# Install core packages, hardware kernels, and tools
-pacstrap /mnt base linux linux-firmware nano grub efibootmgr</code></pre>
-                    </div>
-                    <span style="font-size:0.85rem; color:var(--text-secondary);">*Explainer: Pacstrap pulls structural core operating binaries from mirror networks and copies them into your target storage drive mount paths.*</span>
-                </div>
-
-                <div class="roadmap-step">
-                    <h3>Step 5: Generate the Storage Mount Map & Chroot Into the Environment</h3>
-                    <p>Create a persistent filesystem structural map tracking file for storage pathways, and log directly into your new system workspace context:</p>
-                    <div class="code-snippet-container">
-                        <button class="copy-btn" onclick="copySnippet(this)">Copy</button>
-                        <pre><code>genfstab -U /mnt >> /mnt/etc/fstab
-arch-chroot /mnt</code></pre>
-                    </div>
-                    <span style="font-size:0.85rem; color:var(--text-secondary);">*Explainer: Arch-chroot shifts your active operational perspective so you are running commands inside the newly installed drive framework.*</span>
-                </div>
-
-                <div class="roadmap-step">
-                    <h3>Step 6: Configure Timezone, Localization, and Network Identity</h3>
-                    <p>Map your regional coordinates, activate language packs, and name your system hardware identity node on local networks:</p>
-                    <div class="code-snippet-container">
-                        <button class="copy-btn" onclick="copySnippet(this)">Copy</button>
-                        <pre><code>ln -sf /usr/share/zoneinfo/Asia/Karachi /etc/localtime
-hwclock --systohc
-echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-locale-gen
-echo "my-linux-node" > /etc/hostname</code></pre>
-                    </div>
-                </div>
-
-                <div class="roadmap-step">
-                    <h3>Step 7: Set Root Passwords and Initialize the Bootloader</h3>
-                    <p>Create access credentials for your system administrator account, install the GRUB boot manager, and generate its initialization settings:</p>
-                    <div class="code-snippet-container">
-                        <button class="copy-btn" onclick="copySnippet(this)">Copy</button>
-                        <pre><code>passwd
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
-grub-mkconfig -o /boot/grub/grub.cfg</code></pre>
-                    </div>
-                    <span style="font-size:0.85rem; color:var(--text-secondary);">*Explainer: The bootloader acts as the initial execution target for the motherboard firmware, handing off control to the Linux kernel during system start.*</span>
-                </div>
-
-                <div class="roadmap-step">
-                    <h3>Step 8: Finalizing and System Reboots</h3>
-                    <p>Exit the isolated sandbox environment, unmount your drive paths cleanly, and reboot your hardware into your newly installed system:</p>
-                    <div class="code-snippet-container">
-                        <button class="copy-btn" onclick="copySnippet(this)">Copy</button>
-                        <pre><code>exit
-umount -R /mnt
-reboot</code></pre>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- PAGE 7: ROADMAP TRACKER -->
-        <section id="roadmap-page" class="page-section">
-            <h1>Your System Training Roadmap</h1>
-            <p>Track your technical progress toward understanding Linux configurations. Click on milestones to mark individual training modules completed as you learn.</p>
-            
-            <div class="roadmap" id="interactiveRoadmap">
-                <!-- Javascript maps interactive steps inside this tracker container -->
-            </div>
-        </section>
-
-        <!-- PAGE 8: KNOWLEDGE EVALUATION (QUIZ) -->
-        <section id="quiz-page" class="page-section">
-            <h1>Knowledge Evaluation Workspace</h1>
-            <p>Test your understanding of Linux core operations. Complete this 20-question evaluation to check your system knowledge.</p>
-            
-            <div class="progress-bar-container">
-                <div class="progress-fill" id="quizProgress"></div>
-            </div>
-
-            <div id="quizContainer">
-                <!-- Javascript renders dynamic question nodes here -->
-            </div>
-        </section>
-
-    </main>
-
-    <script>
-        // CORE DATABASE FOR UTILITY ENTRIES
-        const commandDatabase = [
-            { cmd: "pwd", desc: "Print Working Directory", action: "Displays the absolute directory pathway you are currently working in.", context: "navigation" },
-            { cmd: "ls", desc: "List Directory Contents", action: "Lists filenames and folder targets inside your active folder space.", context: "navigation" },
-            { cmd: "cd", desc: "Change Directory", action: "Shifts your active directory location to a new folder target path.", context: "navigation" },
-            { cmd: "mkdir", desc: "Make Directory", action: "Creates an empty directory folder asset inside your current pathway node.", context: "file management" },
-            { cmd: "rm", desc: "Remove File / Folder", action: "Deletes files permanently. Append -r to recursively strip down folder targets.", context: "file management" },
-            { cmd: "cp", desc: "Copy Asset Content", action: "Duplicates file records from source locations to specified target destinations.", context: "file management" },
-            { cmd: "mv", desc: "Move / Rename Asset", action: "Shifts files to fresh folders, or alters their current string name identifiers.", context: "file management" },
-            { cmd: "cat", desc: "Concatenate and View", action: "Reads text strings out from target asset files directly to output panels.", context: "inspection" },
-            { cmd: "chmod", desc: "Change Modes Permissions", action: "Modifies permission metrics for Owner, Group, and Public access tiers.", context: "security" },
-            { cmd: "chown", desc: "Change Asset Ownership", action: "Reassigns absolute profile ownership rights for targeting files.", context: "security" },
-            { cmd: "sudo", desc: "SuperUser Do", action: "Elevates terminal instruction processing permissions to administrator status.", context: "security" },
-            { cmd: "top / htop", desc: "Process Performance Monitors", action: "Launches real-time process managers tracking CPU, memory consumption, and run statuses.", context: "monitoring" },
-            { cmd: "grep", desc: "Global Regular Expression Print", action: "Searches through text strings to extract matching lines of data.", context: "text processing" },
-            { cmd: "ping", desc: "Packet Internet Groper", action: "Sends echo checks to network targets to verify connectivity paths.", context: "network" }
-        ];
-
-        // 20-QUESTION STRUCTURAL EVALUATION DATA POOL
-        const quizQuestions = [
-            { q: "What does the command tool token 'pwd' perform?", opts: ["Password Reset", "Print Working Directory", "Process Window Diagnostics", "Package Work Decompressor"], answer: 1, exp: "'pwd' stands for Print Working Directory. It shows the absolute directory path you are currently working in, starting from root." },
-            { q: "Which directory marker signifies the absolute top foundation folder of a Linux system?", opts: ["~", "/home", "/root", "/"], answer: 3, exp: "The forward slash '/' represents the root directory, which is the foundational base of the entire filesystem structure." },
-            { q: "What command lets you run instructions with temporary root administrator privileges?", opts: ["runas", "sudo", "su", "admin"], answer: 1, exp: "'sudo' stands for SuperUser Do. It runs commands with root access privileges securely." },
-            { q: "Which distribution is explicitly built around manual configuration from a blank shell interface?", opts: ["Linux Mint", "Ubuntu Workstation", "Arch Linux", "Fedora Core"], answer: 2, exp: "Arch Linux strips away automated installations, requiring users to build and configure the operating system manually from a terminal shell." },
-            { q: "What tool allows you to look inside a file's contents directly inside your active terminal window view?", opts: ["cat", "ls", "mkdir", "cd"], answer: 0, exp: "'cat' (concatenate) reads data from text file streams and outputs them directly to your terminal screen view." },
-            { q: "How are physical storage hard drives and dynamic systems memory tracked inside Linux environments?", opts: ["Registry strings", "Logical drive letters (C:, D:)", "Unified system files within the directory hierarchy", "Isolated operational memory matrices"], answer: 2, exp: "Linux follows the core philosophy that 'everything is a file.' Hardware storage drives and configurations are represented as files inside the root file system." },
-            { q: "What folder holds your system configuration text files and service settings?", opts: ["/bin", "/etc", "/var", "/usr"], answer: 1, exp: "The `/etc` directory is the central configuration repository for system-wide service maps and operational settings." },
-            { q: "What action does running 'cd ..' execute?", opts: ["Deletes current work directory folders", "Creates secondary backup directories", "Moves your active folder position up one parent directory level", "Closes active command terminal windows"], answer: 2, exp: "The double dot '..' token signifies the immediate parent folder. Running 'cd ..' shifts your terminal workspace position up one level." },
-            { q: "What flag sequence allows you to permanently delete directories filled with content using 'rm'?", opts: ["-f", "-d", "-r", "-x"], answer: 2, exp: "The `-r` (recursive) flag tells the system to step down into subdirectories, deleting all nested files and folders permanently." },
-            { q: "Which command tool edits user/group file permissions numerically or symbolically?", opts: ["chown", "chmod", "passwd", "ufw"], answer: 1, exp: "'chmod' (Change Mode) alters security permission bits matching owner, group, and public user tiers." },
-            { q: "What application management system utility tool comes pre-packaged inside Debian, Ubuntu, and Linux Mint distributions?", opts: ["pacman", "dnf", "apt", "flatpak"], answer: 2, exp: "Debian-derived platforms rely on the Advanced Package Tool (`apt`) library matrix to download and manage platform software applications." },
-            { q: "Where does the system store dynamic operational assets like web servers cache registries and runtime system log configurations?", opts: ["/boot", "/opt", "/var", "/home"], answer: 2, exp: "The `/var` folder manages variable files whose sizes change constantly during system operation, including system logs." },
-            { q: "What does the text symbol token '~' match inside a terminal command path?", opts: ["The system root base path folder", "The active user's isolated home directory workspace", "An invalid system configuration target error", "Hidden file storage partitions"], answer: 1, exp: "The tilde symbol `~` functions as a shorthand macro shortcut pointing directly to the active logged-in user's personal home directory path." },
-            { q: "What numeric code sequence provides full read, write, and execute privileges for an owner, while denying all access to others using chmod?", opts: ["777", "700", "644", "755"], answer: 1, exp: "Read=4, Write=2, Execute=1. Combined they equal 7. Mapped sequentially, '700' gives full privileges to the owner, and zero access to group and global tiers." },
-            { q: "What terminal execution tool lets you view dynamic processing tasks, CPU loads, and active memory allocation loops?", opts: ["ping", "top", "ls", "grep"], answer: 1, exp: "The `top` utility (along with its modern variant `htop`) creates interactive loops that display active background processing metrics." },
-            { q: "What action does running 'mkdir core-project' perform?", opts: ["Deletes structural repository folders named core-project", "Generates an empty text file titled core-project", "Creates a new subdirectory folder asset named core-project", "Searches files for the text string 'core-project'"], answer: 2, exp: "The `mkdir` utility creates a new, empty directory folder using your specified name in your active path location." },
-            { q: "What package management tool engine runs by default on advanced Arch Linux distribution environments?", opts: ["apt", "dnf", "pacman", "zypper"], answer: 2, exp: "Arch Linux relies on its built-in package manager `pacman` to handle software installations and dependency updates." },
-            { q: "What step is required right after formatting disk drives during an Arch Linux installation procedure?", opts: ["Mounting the target file system space to the `/mnt` directory pathway", "Installing a desktop interface framework layer", "Rebooting your motherboard hardware modules instantly", "Configuring firewall rules"], answer: 0, exp: "After drive formatting runs finish, you must mount your active filesystems to local paths like `/mnt` so installation tools can read and write files to the disk." },
-            { q: "What core terminal configuration file asset stores systemic user credentials maps and password configuration structures?", opts: ["/etc/passwd", "/usr/bin/bash", "/var/log/syslog", "/etc/hostname"], answer: 0, exp: "The `/etc/passwd` configuration tracking file contains fundamental account attributes matching system users, service routes, and authorization rules." },
-            { q: "What utility searches through file outputs or system data text logs to pull lines matching unique strings?", opts: ["chmod", "grep", "mv", "cat"], answer: 1, exp: "The `grep` command searches text inputs and extracts lines matching your specific search query strings." }
-        ];
-
-        let currentQuestionIndex = 0;
-        let runningUserScore = 0;
-
-        // INIT APPLICATION LIFECYCLE
-        window.onload = function() {
-            renderCommandDatabase();
-            renderRoadmapTrackers();
-            initializeQuizTracker();
-        };
-
-        // NAVIGATION LOGIC
-        function switchPage(pageId) {
-            document.querySelectorAll('.page-section').forEach(section => section.classList.remove('active'));
-            document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
-            
-            document.getElementById(pageId).classList.add('active');
-            
-            // Highlight matching sidebar tab item link
-            const links = document.querySelectorAll('.nav-links li a');
-            links.forEach(link => {
-                if(link.getAttribute('onclick').includes(pageId)) {
-                    link.parentElement.classList.add('active');
-                }
-            });
-            window.scrollTo(0,0);
+      // Automatically retract the menu panel if mobile user taps anywhere in the central display area
+      contentArea.addEventListener('click', () => {
+        if (navigationSidebar.classList.contains('active')) {
+          navigationSidebar.classList.remove('active');
+          mobileMenuBtn.classList.remove('open');
         }
-
-        // COPIER MANAGEMENT HANDLERS
-        function copySnippet(buttonElement) {
-            const targetPreBlock = buttonElement.nextElementSibling;
-            const codeStringValue = targetPreBlock.innerText;
-            navigator.clipboard.writeText(codeStringValue).then(() => {
-                buttonElement.innerText = "Copied!";
-                buttonElement.style.backgroundColor = "var(--prompt-color)";
-                setTimeout(() => {
-                    buttonElement.innerText = "Copy";
-                    buttonElement.style.backgroundColor = "rgba(255,255,255,0.1)";
-                }, 2000);
-            });
-        }
-
-        // THEME HANDLING TOGGLES
-        function toggleTheme() {
-            const activeBody = document.body;
-            const state = activeBody.getAttribute('data-theme');
-            if (state === "light") {
-                activeBody.setAttribute('data-theme', 'dark');
-            } else {
-                activeBody.setAttribute('data-theme', 'light');
-            }
-        }
-
-        // REFERENCE INTERACTIVE FILTERS
-        function renderCommandDatabase() {
-            const container = document.getElementById('commandContainer');
-            container.innerHTML = "";
-            commandDatabase.forEach(item => {
-                container.innerHTML += `
-                    <div class="card" style="margin-bottom:1rem;" data-cmd="${item.cmd}" data-desc="${item.desc} ${item.action}">
-                        <h3 style="margin-top:0; color:var(--accent); font-family:monospace;">${item.cmd}</h3>
-                        <p style="font-weight:bold; margin-bottom:0.25rem;">${item.desc}</p>
-                        <p style="font-size:0.95rem; margin-bottom:0.5rem;">${item.action}</p>
-                        <div class="code-snippet-container">
-                            <button class="copy-btn" onclick="copySnippet(this)">Copy</button>
-                            <pre><code>${item.cmd}</code></pre>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function filterCommands() {
-            const filterStringValue = document.getElementById('cmdSearch').value.toLowerCase();
-            const cards = document.querySelectorAll('#commandContainer .card');
-            cards.forEach(card => {
-                const searchHaystack = (card.getAttribute('data-cmd') + " " + card.getAttribute('data-desc')).toLowerCase();
-                if(searchHaystack.includes(filterStringValue)) {
-                    card.style.display = "block";
-                } else {
-                    card.style.display = "none";
-                }
-            });
-        }
-
-        // ROADMAP TRACKERS GENERATORS
-        const trackingMilestones = [
-            "Grasped Kernel Concepts and Shell Translation Operations",
-            "Understood File Tree Structures Roots, Binaries, and Home Spaces",
-            "Mastered Terminal Path Navigation (pwd, ls, cd, cd ..)",
-            "Learned File Generation and Modification Tasks (mkdir, rm, cat)",
-            "Configured Advanced Access Matrix Tiers with chmod Privileges",
-            "Successfully Simulated a Step-by-Step Arch Linux Terminal System Installation"
-        ];
-
-        function renderRoadmapTrackers() {
-            const mapContainer = document.getElementById('interactiveRoadmap');
-            mapContainer.innerHTML = "";
-            trackingMilestones.forEach((title, index) => {
-                mapContainer.innerHTML += `
-                    <div class="roadmap-step" id="step-${index}" onclick="toggleStepCompletion(${index})" style="cursor:pointer;">
-                        <h3 style="margin-top:0;">Level Node 0${index + 1}: ${title}</h3>
-                        <p style="margin-bottom:0; font-size:0.9rem;">Click to mark this step completed.</p>
-                    </div>
-                `;
-            });
-        }
-
-        function toggleStepCompletion(index) {
-            const node = document.getElementById(`step-${index}`);
-            node.classList.toggle('completed');
-            if(node.classList.contains('completed')) {
-                node.style.borderLeft = "5px solid var(--prompt-color)";
-                node.querySelector('p').innerText = "✓ Module Completed! Great work.";
-            } else {
-                node.style.borderLeft = "1px solid var(--border-color)";
-                node.querySelector('p').innerText = "Click to mark this step completed.";
-            }
-        }
-
-        // INTERACTIVE TERMINAL SIMULATOR LOGIC
-        function focusTerminalInput() {
-            document.getElementById('termInput').focus();
-        }
-
-        let terminalVirtualDirectory = "~";
-
-        function handleTerminalCommand(event) {
-            if (event.key === "Enter") {
-                const inputElement = document.getElementById('termInput');
-                const rawCommandString = inputElement.value.trim();
-                const commandTokens = rawCommandString.toLowerCase().split(" ");
-                const primaryToken = commandTokens[0];
-
-                let outputText = "";
-
-                if (rawCommandString !== "") {
-                    switch(primaryToken) {
-                        case "help":
-                            outputText = "Available Sandbox Utilities:\n  help      - View current help index details\n  clear     - Wipe command terminal log screen interfaces\n  pwd       - Display current directory node access pathway\n  ls        - List virtual filesystem sub assets\n  cd        - Change current directory workspace location\n  neofetch  - Output core terminal mock ecosystem metrics\n  whoami    - Display active profile username credentials";
-                            break;
-                        case "clear":
-                            document.getElementById('termBody').innerHTML = `
-                                <div class="terminal-line">
-                                    <span class="terminal-prompt">guest@codex:${terminalVirtualDirectory} $</span>
-                                    <input type="text" id="termInput" class="terminal-input" autofocus onkeydown="handleTerminalCommand(event)">
-                                </div>
-                            `;
-                            focusTerminalInput();
-                            return;
-                        case "pwd":
-                            outputText = terminalVirtualDirectory === "~" ? "/home/guest" : "/home/guest/documents";
-                            break;
-                        case "ls":
-                            outputText = terminalVirtualDirectory === "~" ? "documents/  system_blueprint.txt  notes.md" : "financial_index.csv  project_log.txt";
-                            break;
-                        case "cd":
-                            const targetPath = commandTokens[1];
-                            if(!targetPath || targetPath === "~") {
-                                terminalVirtualDirectory = "~";
-                            } else if (targetPath === "documents" && terminalVirtualDirectory === "~") {
-                                terminalVirtualDirectory = "~/documents";
-                            } else if (targetPath === "..") {
-                                terminalVirtualDirectory = "~";
-                            } else {
-                                outputText = "bash: cd: " + targetPath + ": No such directory file found.";
-                            }
-                            break;
-                        case "whoami":
-                            outputText = "guest";
-                            break;
-                        case "neofetch":
-                            outputText = "███████████████████  guest@linux-codex\n███████████████████  -----------------\n███████████████████  OS: Codex GNU/Linux x86_64\n███████████████████  Kernel: 6.9.3-arch1-1\n███████████████████  Uptime: 4 mins\n███████████████████  Shell: bash 5.2.26\n███████████████████  Terminal: Browser Sandbox V1\n                     CPU: Virtual Core Engine x4\n                     Memory: 16GB Allocation Matrix";
-                            break;
-                        default:
-                            outputText = "bash: command utility identifier '" + primaryToken + "' not recognized. Type 'help' for support options.";
-                    }
-
-                    // Append output nodes cleanly to screen log interface
-                    const targetInputLine = inputElement.parentElement;
-                    const logContainer = document.createElement('div');
-                    logContainer.className = "terminal-output";
-                    logContainer.innerText = `guest@codex:${terminalVirtualDirectory} $ ${rawCommandString}\n${outputText}`;
-                    
-                    targetInputLine.parentElement.insertBefore(logContainer, targetInputLine);
-                    
-                    // Reset the prompt input line configuration parameters
-                    inputElement.value = "";
-                    targetInputLine.querySelector('.terminal-prompt').innerText = `guest@codex:${terminalVirtualDirectory} $ `;
-                    document.getElementById('termBody').scrollTop = document.getElementById('termBody').scrollHeight;
-                }
-            }
-        }
-
-        // DYNAMIC QUIZ CORE ENGINE LOGIC
-        function initializeQuizTracker() {
-            currentQuestionIndex = 0;
-            runningUserScore = 0;
-            renderQuizActiveQuestion();
-        }
-
-        function renderQuizActiveQuestion() {
-            const container = document.getElementById('quizContainer');
-            
-            // Calculate progress bars fill factors
-            const progressPercentage = (currentQuestionIndex / quizQuestions.length) * 100;
-            document.getElementById('quizProgress').style.width = `${progressPercentage}%`;
-
-            if (currentQuestionIndex >= quizQuestions.length) {
-                renderQuizFinalScoreboard();
-                return;
-            }
-
-            const data = quizQuestions[currentQuestionIndex];
-            
-            let optionsHTML = "";
-            data.opts.forEach((option, index) => {
-                optionsHTML += `
-                    <button class="quiz-opt-btn" onclick="evaluateUserAnswerSelection(this, ${index})">> ${option}</button>
-                `;
-            });
-
-            container.innerHTML = `
-                <div class="quiz-card">
-                    <div style="font-size:0.9rem; font-weight:bold; color:var(--accent); margin-bottom:0.5rem;">QUESTION 0${currentQuestionIndex + 1} OF ${quizQuestions.length}</div>
-                    <div class="quiz-question">${data.q}</div>
-                    <div class="quiz-options">
-                        ${optionsHTML}
-                    </div>
-                    <div class="explanation-box" id="quizExplanation">
-                        <strong style="color:var(--text-primary);">Concept Explainer:</strong>
-                        <p style="margin-top:0.5rem; margin-bottom:0; font-size:0.95rem;">${data.exp}</p>
-                    </div>
-                    <div class="quiz-controls">
-                        <span id="quizScoreTracker" style="font-size:0.9rem; font-weight:bold;">Running Score: ${runningUserScore} Points</span>
-                        <button class="action-btn" id="quizNextBtn" disabled onclick="advanceQuizQuestionIndex()">Advance Next Question</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function evaluateUserAnswerSelection(buttonNode, selectedIndex) {
-            const data = quizQuestions[currentQuestionIndex];
-            const allOptionsButtons = buttonNode.parentElement.querySelectorAll('.quiz-opt-btn');
-            
-            // Disable options selection changes
-            allOptionsButtons.forEach(btn => btn.disabled = true);
-
-            if (selectedIndex === data.answer) {
-                buttonNode.classList.add('correct');
-                runningUserScore += 5;
-                document.getElementById('quizScoreTracker').innerText = `Running Score: ${runningUserScore} Points`;
-            } else {
-                buttonNode.classList.add('wrong');
-                allOptionsButtons[data.answer].classList.add('correct');
-            }
-
-            // Expose the context explanations boxes
-            document.getElementById('quizExplanation').style.display = "block";
-            document.getElementById('quizNextBtn').disabled = false;
-        }
-
-        function advanceQuizQuestionIndex() {
-            currentQuestionIndex++;
-            renderQuizActiveQuestion();
-        }
-
-        function renderQuizFinalScoreboard() {
-            const container = document.getElementById('quizContainer');
-            document.getElementById('quizProgress').style.width = "100%";
-            
-            const maxPossiblePoints = quizQuestions.length * 5;
-            const passingScoreTier = maxPossiblePoints * 0.75;
-            
-            let performanceFeedback = "";
-            if (runningUserScore >= passingScoreTier) {
-                performanceFeedback = "Excellent! You have a solid grasp of fundamental Linux operations. You are ready to start experimenting with intermediate system tasks.";
-            } else {
-                performanceFeedback = "Review the core concepts, directory maps, and basic commands. Linux takes regular practice to get used to the text line syntax frameworks.";
-            }
-
-            container.innerHTML = `
-                <div class="quiz-card" style="text-align:center; padding:3rem 2rem;">
-                    <h2 style="border-left:none; padding-left:0; color:var(--prompt-color); font-size:2.2rem; margin-top:0;">Evaluation Complete</h2>
-                    <p style="font-size:1.2rem; margin-bottom:1.5rem;">Your Total Earned Score: <strong>${runningUserScore}</strong> / ${maxPossiblePoints} Points</p>
-                    <div class="infobox" style="text-align:left; margin:1.5rem auto; max-width:650px;">
-                        <p>${performanceFeedback}</p>
-                    </div>
-                    <button class="action-btn" style="margin-top:1rem; padding:1rem 2rem; font-size:1rem;" onclick="initializeQuizTracker()">Initialize New Evaluation Run</button>
-                </div>
-            `;
-        }
-    </script>
+      });
+    });
+  </script>
 </body>
 </html>
