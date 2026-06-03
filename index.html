@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>distrocheck // System Evaluation</title>
   <style>
-    /* --- Your Exact Theme Palette Variables --- */
+    /* --- Navy Blue & Beige Theme Variables --- */
     :root {
-      --bg-color: #0d1117;
-      --term-bg: #161b22;
-      --accent-color: #58a6ff;
-      --text-color: #c9d1d9;
-      --prompt-color: #7ee787;
-      --sidebar-bg: #0c0f14;
+      --bg-color: #0a1128;       /* Deep Navy Blue */
+      --sidebar-bg: #1c2541;     /* Classic Navy Blue */
+      --term-bg: #111c3a;        /* Dark Navy for Quiz Window */
+      --text-main: #f4f5f6;      /* Off-white Text */
+      --text-muted: #94a3b8;     /* Muted Blue-Grey Text */
+      --accent-beige: #e0d0b8;   /* Warm Beige Accent Color */
       --sidebar-width: 280px;
     }
 
@@ -25,22 +25,22 @@
 
     body {
       background-color: var(--bg-color);
-      color: var(--text-color);
+      color: var(--text-main);
       display: flex;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    /* --- Hamburger Menu Button --- */
+    /* --- Hamburger Button (Hidden on Desktop) --- */
     .menu-toggle {
       display: none;
     }
 
-    /* --- Sidebar Layout --- */
+    /* --- Sidebar Setup --- */
     .sidebar {
       width: var(--sidebar-width);
       background-color: var(--sidebar-bg);
-      border-right: 1px solid #21262d;
+      border-right: 1px solid #2a3454;
       display: flex;
       flex-direction: column;
       padding: 24px 16px;
@@ -55,13 +55,13 @@
     .brand-title {
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--text-color);
+      color: var(--accent-beige); /* Beige Title */
       letter-spacing: -0.5px;
     }
 
     .brand-subtitle {
       font-size: 0.85rem;
-      color: #8b949e;
+      color: var(--text-muted);
       margin-top: 4px;
     }
 
@@ -75,7 +75,7 @@
     .nav-item a {
       display: block;
       padding: 12px 16px;
-      color: #8b949e;
+      color: var(--text-muted);
       text-decoration: none;
       border-radius: 6px;
       font-size: 0.95rem;
@@ -83,18 +83,18 @@
     }
 
     .nav-item a:hover {
-      background-color: #21262d;
-      color: var(--text-color);
+      background-color: #2a3454;
+      color: var(--text-main);
     }
 
     .nav-item.active a {
-      background-color: #21262d;
-      color: #ffe4b5;
-      border-left: 3px solid var(--accent-color);
+      background-color: #2a3454;
+      color: var(--accent-beige); /* Active text highlighted in Beige */
+      border-left: 3px solid var(--accent-beige);
       font-weight: 600;
     }
 
-    /* --- Main Content Layout --- */
+    /* --- Main Screen Layout --- */
     .main-content {
       flex-grow: 1;
       padding: 40px;
@@ -104,24 +104,24 @@
       width: calc(100% - var(--sidebar-width));
     }
 
-    /* --- Terminal Interface --- */
+    /* --- Terminal Quiz Window --- */
     .terminal-window {
       width: 100%;
       max-width: 650px;
       background-color: var(--term-bg);
       border-radius: 8px;
-      border: 1px solid #21262d;
+      border: 1px solid #2a3454;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
       overflow: hidden;
     }
 
     .terminal-header {
-      background-color: var(--sidebar-bg);
+      background-color: #070d1f;
       padding: 12px 16px;
       display: flex;
       align-items: center;
       position: relative;
-      border-bottom: 1px solid #21262d;
+      border-bottom: 1px solid #2a3454;
     }
 
     .terminal-buttons {
@@ -134,9 +134,9 @@
       height: 12px;
       border-radius: 50%;
     }
-    .dot-red { background-color: #f85149; }
-    .dot-yellow { background-color: #f0883e; }
-    .dot-green { background-color: #56d364; }
+    .dot-red { background-color: #ef4444; }
+    .dot-yellow { background-color: #eab308; }
+    .dot-green { background-color: #22c55e; }
 
     .terminal-title {
       position: absolute;
@@ -145,7 +145,7 @@
       left: 0;
       font-family: 'Courier New', Courier, monospace;
       font-size: 0.9rem;
-      color: #8b949e;
+      color: var(--text-muted);
       pointer-events: none;
     }
 
@@ -156,22 +156,22 @@
 
     .app-title {
       font-size: 1.4rem;
-      color: var(--accent-color);
+      color: var(--accent-beige);
       font-weight: bold;
       margin-bottom: 16px;
     }
 
     .terminal-prompt {
-      color: var(--prompt-color);
+      color: var(--accent-beige);
       margin-bottom: 24px;
     }
     .terminal-prompt span {
-      color: var(--text-color);
+      color: var(--text-main);
     }
 
     .quiz-question {
       font-size: 1rem;
-      color: var(--text-color);
+      color: var(--text-main);
       margin-bottom: 24px;
       line-height: 1.5;
     }
@@ -183,9 +183,9 @@
     }
 
     .option-btn {
-      background-color: #21262d;
-      border: 1px solid #30363d;
-      color: var(--text-color);
+      background-color: #1c2541;
+      border: 1px solid #2a3454;
+      color: var(--text-main);
       padding: 14px 16px;
       text-align: left;
       border-radius: 6px;
@@ -197,23 +197,25 @@
     }
 
     .option-btn:hover {
-      background-color: #30363d;
-      border-color: var(--accent-color);
+      background-color: #2a3454;
+      border-color: var(--accent-beige);
+      color: var(--accent-beige);
     }
 
     .result-title {
       font-size: 1.2rem;
-      color: var(--prompt-color);
+      color: var(--accent-beige);
       margin-bottom: 12px;
       font-weight: bold;
     }
 
-    /* --- Responsive Mobile Queries --- */
+    /* --- Responsive Rules for Mobile (Show / Hide Trigger) --- */
     @media (max-width: 768px) {
       body {
         flex-direction: column;
       }
 
+      /* Make Hamburger Button Visible on Mobile Screens */
       .menu-toggle {
         display: flex;
         flex-direction: column;
@@ -233,21 +235,23 @@
         display: block;
         height: 3px;
         width: 100%;
-        background-color: var(--text-color);
+        background-color: var(--accent-beige); /* Beige Hamburger Lines */
         border-radius: 2px;
         transition: all 0.3s ease;
       }
 
+      /* Sidebar turns into a slide-out drawer container */
       .sidebar {
         position: fixed;
         top: 0;
-        left: -280px;
+        left: -280px; /* Kept completely off-screen until clicked */
         height: 100vh;
         z-index: 999;
-        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: left 0.3s ease-in-out;
         box-shadow: 10px 0 25px rgba(0, 0, 0, 0.6);
       }
 
+      /* Slid into view when active class is added */
       .sidebar.active {
         left: 0;
       }
@@ -257,6 +261,7 @@
         padding: 80px 16px 40px 16px;
       }
 
+      /* Morph hamburger icon into an X when open */
       .menu-toggle.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
       .menu-toggle.open span:nth-child(2) { opacity: 0; }
       .menu-toggle.open span:nth-child(3) { transform: translateY(-4px) rotate(-45deg); }
@@ -307,7 +312,7 @@
   </main>
 
   <script>
-    /* --- Your Exact Questions Dataset and Logic System --- */
+    /* --- Your Normal, Unbroken Dynamic Quiz Engine --- */
     const questions = [
       {
         question: "1. What is your preferred package management styling?",
@@ -346,7 +351,6 @@
         <div class="options-container">
       `;
 
-      // Restored your exact loop logic from image_581f7e.png
       q.options.forEach((opt, idx) => {
         html += `<button class="option-btn" onclick="selectOption(${idx})">&gt; ${opt.text}</button>`;
       });
@@ -355,7 +359,6 @@
       qBody.innerHTML = html;
     }
 
-    // Restored your exact calculation routine from image_581f7e.png
     function selectOption(index) {
       const points = questions[currentQuestion].options[index].points;
       for (let distro in points) {
@@ -365,7 +368,6 @@
       loadQuestion();
     }
 
-    // Restored your reduction formula block from image_581f7e.png
     function showResults() {
       const qBody = document.getElementById('quiz-body');
       let winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
@@ -380,8 +382,8 @@
       qBody.innerHTML = `
         <div class="result-title">[EVALUATION COMPLETE]</div>
         <p>Your ultimate matching ecosystem profile is:</p>
-        <h2 style="color: var(--accent-color); font-size: 28px; margin: 15px 0;">&gt; ${winner.toUpperCase()}</h2>
-        <p style="line-height: 1.6; color: #8b949e;">${descriptions[winner]}</p>
+        <h2 style="color: var(--accent-beige); font-size: 28px; margin: 15px 0;">&gt; ${winner.toUpperCase()}</h2>
+        <p style="line-height: 1.6; color: var(--text-muted);">${descriptions[winner]}</p>
         <button class="option-btn" style="margin-top: 20px;" onclick="resetQuiz()">Execute New Diagnostic Run</button>
       `;
     }
@@ -392,20 +394,22 @@
       loadQuestion();
     }
 
-    // Mobile Navigation Toggle Drawer Logic
+    /* --- Show/Hide Sidebar Script Mechanics --- */
     document.addEventListener('DOMContentLoaded', () => {
-      loadQuestion();
+      loadQuestion(); // Fire up quiz rendering instantly
 
       const mobileMenuBtn = document.getElementById('mobileMenuBtn');
       const navigationSidebar = document.getElementById('navigationSidebar');
       const contentArea = document.getElementById('contentArea');
 
+      // Toggles the visibility when button is pressed
       mobileMenuBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         navigationSidebar.classList.toggle('active');
         mobileMenuBtn.classList.toggle('open');
       });
 
+      // Clicking main background automatically closes the menu drawer
       contentArea.addEventListener('click', () => {
         if (navigationSidebar.classList.contains('active')) {
           navigationSidebar.classList.remove('active');
