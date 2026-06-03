@@ -2,20 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- This viewport tag is absolutely crucial for mobile styling to work! -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>distrocheck // System Evaluation</title>
   <style>
-    /* --- Base Variables & Core Reset --- */
+    /* --- Your Exact Theme Palette Variables --- */
     :root {
-      --bg-color: #0b0f19;
-      --sidebar-bg: #0f1423;
-      --terminal-bg: #131a30;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent-blue: #3b82f6;
-      --accent-green: #10b981;
-      --accent-orange: #f97316;
+      --bg-color: #0d1117;
+      --term-bg: #161b22;
+      --accent-color: #58a6ff;
+      --text-color: #c9d1d9;
+      --prompt-color: #7ee787;
+      --sidebar-bg: #0c0f14;
       --sidebar-width: 280px;
     }
 
@@ -28,13 +25,13 @@
 
     body {
       background-color: var(--bg-color);
-      color: var(--text-main);
+      color: var(--text-color);
       display: flex;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    /* --- Hamburger Menu Button (Desktop Hidden) --- */
+    /* --- Hamburger Menu Button --- */
     .menu-toggle {
       display: none;
     }
@@ -43,7 +40,7 @@
     .sidebar {
       width: var(--sidebar-width);
       background-color: var(--sidebar-bg);
-      border-right: 1px solid #1e293b;
+      border-right: 1px solid #21262d;
       display: flex;
       flex-direction: column;
       padding: 24px 16px;
@@ -58,13 +55,13 @@
     .brand-title {
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--text-main);
+      color: var(--text-color);
       letter-spacing: -0.5px;
     }
 
     .brand-subtitle {
       font-size: 0.85rem;
-      color: var(--text-muted);
+      color: #8b949e;
       margin-top: 4px;
     }
 
@@ -78,7 +75,7 @@
     .nav-item a {
       display: block;
       padding: 12px 16px;
-      color: var(--text-muted);
+      color: #8b949e;
       text-decoration: none;
       border-radius: 6px;
       font-size: 0.95rem;
@@ -86,15 +83,14 @@
     }
 
     .nav-item a:hover {
-      background-color: #1e293b;
-      color: var(--text-main);
+      background-color: #21262d;
+      color: var(--text-color);
     }
 
-    /* Active State matching image_d7093e.png */
     .nav-item.active a {
-      background-color: #1e293b;
-      color: #ffe4b5; /* Warm highlight color */
-      border-left: 3px solid var(--accent-blue);
+      background-color: #21262d;
+      color: #ffe4b5;
+      border-left: 3px solid var(--accent-color);
       font-weight: 600;
     }
 
@@ -108,24 +104,24 @@
       width: calc(100% - var(--sidebar-width));
     }
 
-    /* --- Terminal Interface (From image_d788df.png) --- */
+    /* --- Terminal Interface --- */
     .terminal-window {
       width: 100%;
       max-width: 650px;
-      background-color: var(--terminal-bg);
+      background-color: var(--term-bg);
       border-radius: 8px;
-      border: 1px solid #1e293b;
+      border: 1px solid #21262d;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
       overflow: hidden;
     }
 
     .terminal-header {
-      background-color: #0f1423;
+      background-color: var(--sidebar-bg);
       padding: 12px 16px;
       display: flex;
       align-items: center;
       position: relative;
-      border-bottom: 1px solid #1e293b;
+      border-bottom: 1px solid #21262d;
     }
 
     .terminal-buttons {
@@ -138,9 +134,9 @@
       height: 12px;
       border-radius: 50%;
     }
-    .dot-red { background-color: #ef4444; }
-    .dot-yellow { background-color: #eab308; }
-    .dot-green { background-color: #22c55e; }
+    .dot-red { background-color: #f85149; }
+    .dot-yellow { background-color: #f0883e; }
+    .dot-green { background-color: #56d364; }
 
     .terminal-title {
       position: absolute;
@@ -149,7 +145,7 @@
       left: 0;
       font-family: 'Courier New', Courier, monospace;
       font-size: 0.9rem;
-      color: var(--text-muted);
+      color: #8b949e;
       pointer-events: none;
     }
 
@@ -160,22 +156,22 @@
 
     .app-title {
       font-size: 1.4rem;
-      color: var(--accent-blue);
+      color: var(--accent-color);
       font-weight: bold;
       margin-bottom: 16px;
     }
 
     .terminal-prompt {
-      color: var(--accent-green);
+      color: var(--prompt-color);
       margin-bottom: 24px;
     }
     .terminal-prompt span {
-      color: var(--text-main);
+      color: var(--text-color);
     }
 
     .quiz-question {
       font-size: 1rem;
-      color: var(--text-main);
+      color: var(--text-color);
       margin-bottom: 24px;
       line-height: 1.5;
     }
@@ -187,9 +183,9 @@
     }
 
     .option-btn {
-      background-color: #1e293b;
-      border: 1px solid #334155;
-      color: var(--text-muted);
+      background-color: #21262d;
+      border: 1px solid #30363d;
+      color: var(--text-color);
       padding: 14px 16px;
       text-align: left;
       border-radius: 6px;
@@ -201,9 +197,15 @@
     }
 
     .option-btn:hover {
-      background-color: #334155;
-      color: var(--text-main);
-      border-color: var(--accent-blue);
+      background-color: #30363d;
+      border-color: var(--accent-color);
+    }
+
+    .result-title {
+      font-size: 1.2rem;
+      color: var(--prompt-color);
+      margin-bottom: 12px;
+      font-weight: bold;
     }
 
     /* --- Responsive Mobile Queries --- */
@@ -212,7 +214,6 @@
         flex-direction: column;
       }
 
-      /* Enable Hamburger Button */
       .menu-toggle {
         display: flex;
         flex-direction: column;
@@ -232,56 +233,44 @@
         display: block;
         height: 3px;
         width: 100%;
-        background-color: var(--text-main);
+        background-color: var(--text-color);
         border-radius: 2px;
         transition: all 0.3s ease;
       }
 
-      /* Turn Sidebar into a Slide-out Drawer Container */
       .sidebar {
         position: fixed;
         top: 0;
-        left: -280px; /* Hidden offscreen by default */
+        left: -280px;
         height: 100vh;
         z-index: 999;
         transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 10px 0 25px rgba(0, 0, 0, 0.6);
       }
 
-      /* When JS appends the 'active' class, slide it into frame */
       .sidebar.active {
         left: 0;
       }
 
-      /* Main Content adjustments so it flows cleanly on small screens */
       .main-content {
         width: 100%;
-        padding: 80px 16px 40px 16px; /* Extra top padding stops overlap with menu icon */
+        padding: 80px 16px 40px 16px;
       }
 
-      /* Hamburger Transformation to an 'X' close graphic when open */
-      .menu-toggle.open span:nth-child(1) {
-        transform: translateY(8px) rotate(45deg);
-      }
-      .menu-toggle.open span:nth-child(2) {
-        opacity: 0;
-      }
-      .menu-toggle.open span:nth-child(3) {
-        transform: translateY(-4px) rotate(-45deg);
-      }
+      .menu-toggle.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+      .menu-toggle.open span:nth-child(2) { opacity: 0; }
+      .menu-toggle.open span:nth-child(3) { transform: translateY(-4px) rotate(-45deg); }
     }
   </style>
 </head>
 <body>
 
-  <!-- Mobile Hamburger Activation Icon -->
   <button class="menu-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation Menu">
     <span></span>
     <span></span>
     <span></span>
   </button>
 
-  <!-- Navigation Sidebar (Reconstructed from image_d7093e.png) -->
   <aside class="sidebar" id="navigationSidebar">
     <div class="brand-section">
       <h1 class="brand-title">Linux Codex</h1>
@@ -289,22 +278,19 @@
     </div>
     <nav>
       <ul class="nav-list">
-        <li class="nav-item active"><a href="#">1. Core Overview</a></li>
+        <li class="nav-item"><a href="#">1. Core Overview</a></li>
         <li class="nav-item"><a href="#">2. Distribution Matrix</a></li>
         <li class="nav-item"><a href="#">3. Directory Hierarchy</a></li>
         <li class="nav-item"><a href="#">4. Command Sandbox</a></li>
         <li class="nav-item"><a href="#">5. Package & Security</a></li>
         <li class="nav-item"><a href="#">6. Arch Installation</a></li>
         <li class="nav-item"><a href="#">7. Learning Roadmap</a></li>
-        <li class="nav-item"><a href="#">8. Knowledge Evaluation</a></li>
+        <li class="nav-item active"><a href="#">8. Knowledge Evaluation</a></li>
       </ul>
     </nav>
   </aside>
 
-  <!-- Interactive Sandbox Display Frame -->
   <main class="main-content" id="contentArea">
-
-    <!-- Virtual Terminal Wrapper (Reconstructed from image_d788df.png) -->
     <section class="terminal-window">
       <div class="terminal-header">
         <div class="terminal-buttons">
@@ -315,37 +301,111 @@
         <div class="terminal-title">bash - distrocheck</div>
       </div>
 
-      <div class="terminal-body">
-        <div class="app-title">distrocheck v1.0.0</div>
-        <div class="terminal-prompt">arteo@system:~ $ <span>./run_evaluation.sh</span></div>
-
-        <div class="quiz-question">1. What is your preferred package management styling?</div>
-
-        <div class="options-container">
-          <button class="option-btn">&gt; DIY / Building everything from scratch</button>
-          <button class="option-btn">&gt; Bleeding edge updates, keep it minimal</button>
-          <button class="option-btn">&gt; Rock solid stability, things should just work</button>
+      <div class="terminal-body" id="quiz-body">
         </div>
-      </div>
     </section>
-
   </main>
 
-  <!-- Simple JavaScript to toggle the responsive layout drawers safely -->
   <script>
+    /* --- Your Exact Questions Dataset and Logic System --- */
+    const questions = [
+      {
+        question: "1. What is your preferred package management styling?",
+        options: [
+          { text: "DIY / Building everything from scratch", points: { gentoo: 3, arch: 1 } },
+          { text: "Bleeding edge updates, keep it minimal", points: { arch: 3, fedora: 1 } },
+          { text: "Rock solid stability, things should just work", points: { mint: 3, fedora: 2 } }
+        ]
+      },
+      {
+        question: "2. How do you feel about system configuration file management?",
+        options: [
+          { text: "I want manual control over every single config row", points: { gentoo: 2, arch: 3 } },
+          { text: "Sane defaults out of the box, but fully customizable", points: { fedora: 3, mint: 1 } },
+          { text: "Graphical control panels all the way", points: { mint: 3 } }
+        ]
+      }
+    ];
+
+    let currentQuestion = 0;
+    let scores = { arch: 0, fedora: 0, mint: 0, gentoo: 0 };
+
+    function loadQuestion() {
+      const qBody = document.getElementById('quiz-body');
+
+      if (currentQuestion >= questions.length) {
+        showResults();
+        return;
+      }
+
+      const q = questions[currentQuestion];
+      let html = `
+        <div class="app-title">distrocheck v1.0.0</div>
+        <div class="terminal-prompt">arteo@system:~ $ <span>./run_evaluation.sh</span></div>
+        <div class="quiz-question">${q.question}</div>
+        <div class="options-container">
+      `;
+
+      // Restored your exact loop logic from image_581f7e.png
+      q.options.forEach((opt, idx) => {
+        html += `<button class="option-btn" onclick="selectOption(${idx})">&gt; ${opt.text}</button>`;
+      });
+
+      html += `</div>`;
+      qBody.innerHTML = html;
+    }
+
+    // Restored your exact calculation routine from image_581f7e.png
+    function selectOption(index) {
+      const points = questions[currentQuestion].options[index].points;
+      for (let distro in points) {
+        scores[distro] += points[distro];
+      }
+      currentQuestion++;
+      loadQuestion();
+    }
+
+    // Restored your reduction formula block from image_581f7e.png
+    function showResults() {
+      const qBody = document.getElementById('quiz-body');
+      let winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+
+      let descriptions = {
+        arch: "Arch Linux. You appreciate micro-optimization, bleeding-edge kernels, and custom environment configuration.",
+        fedora: "Fedora Workstation. Clean, leading-edge features, stable, and highly trusted for efficient development workflows.",
+        mint: "Linux Mint. Elegant, classic desktop familiarity, dependable, and zero configuration friction.",
+        gentoo: "Gentoo Linux. Ultimate machine control. You compile from source and dictate exact compiler configurations."
+      };
+
+      qBody.innerHTML = `
+        <div class="result-title">[EVALUATION COMPLETE]</div>
+        <p>Your ultimate matching ecosystem profile is:</p>
+        <h2 style="color: var(--accent-color); font-size: 28px; margin: 15px 0;">&gt; ${winner.toUpperCase()}</h2>
+        <p style="line-height: 1.6; color: #8b949e;">${descriptions[winner]}</p>
+        <button class="option-btn" style="margin-top: 20px;" onclick="resetQuiz()">Execute New Diagnostic Run</button>
+      `;
+    }
+
+    function resetQuiz() {
+      currentQuestion = 0;
+      scores = { arch: 0, fedora: 0, mint: 0, gentoo: 0 };
+      loadQuestion();
+    }
+
+    // Mobile Navigation Toggle Drawer Logic
     document.addEventListener('DOMContentLoaded', () => {
+      loadQuestion();
+
       const mobileMenuBtn = document.getElementById('mobileMenuBtn');
       const navigationSidebar = document.getElementById('navigationSidebar');
       const contentArea = document.getElementById('contentArea');
 
-      // Click event for opening and closing the sidebar drawer
-      mobileMenuBtn.addEventListener('click', (event) => {
-        event.stopPropagation(); // Avoid instantly triggering contentArea close rules
+      mobileMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         navigationSidebar.classList.toggle('active');
         mobileMenuBtn.classList.toggle('open');
       });
 
-      // Automatically retract the menu panel if mobile user taps anywhere in the central display area
       contentArea.addEventListener('click', () => {
         if (navigationSidebar.classList.contains('active')) {
           navigationSidebar.classList.remove('active');
